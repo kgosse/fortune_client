@@ -1,0 +1,9 @@
+
+.card {
+  width: 90vw;
+  margin: 1em 0;
+}
+
+.footer {
+  display: flex;
+}
