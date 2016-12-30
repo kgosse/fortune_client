@@ -7,3 +7,27 @@
 .footer {
   display: flex;
 }
+
+.author span{
+  color: #999;
+}
+
+.message {
+  margin-bottom: 1.5em;
+}
+
+.buttons {
+  margin-bottom: 1em;
+}
+
+.buttons button:first-child {
+  margin-right: 1em;
+}
+
+.extra {
+  background: white;
+}
+
+.extra button:first-child {
+  margin-right: .5em;
+}
