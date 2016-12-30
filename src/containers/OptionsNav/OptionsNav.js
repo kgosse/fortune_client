@@ -30,7 +30,7 @@ class OptionsNav extends Component {
           <Radio value={1}>All</Radio>
           <Radio value={2}>Top 30</Radio>
         </RadioGroup>
-        <Button type="primary">Add Fortune</Button>
+        <Button type="primary" onClick={this.props.addFortune}>Add Fortune</Button>
       </div>
     );
   }
