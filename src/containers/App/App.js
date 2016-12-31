@@ -14,14 +14,11 @@ class App extends Component {
     this.state = {
       visibleFortune : false,
       visibleConnection : false,
-      visibleSubscription : false
+      visibleSubscription : false,
+      fortune: ""
     };
     this.toggleFortune = this.toggleFortune.bind(this);
     this.addFortune = this.addFortune.bind(this);
-    this.toggleConnection = this.toggleConnection.bind(this);
-    this.connect = this.connect.bind(this);
-    this.toggleSubscription = this.toggleSubscription.bind(this);
-    this.subscription = this.subscription.bind(this);
   }
 
   toggleFortune(val){
@@ -29,40 +26,45 @@ class App extends Component {
       visibleFortune: val,
     });
   }
-  
+
+  handleForturneChange(event) {
+    this.setState({fortune: event.target.value});
+  }
+
+
   toggleConnection(val){
     this.setState({
       visibleConnection: val,
     });
   }
-  
+
   toggleSubscription(val){
     this.setState({
       visibleSubscription: val,
     });
   }
-  
+
   addFortune(){
     this.toggleFortune(false);
+    console.log(this.state.fortune);
   }
-  
+
   connect(){
     this.toggleConnection(false);
   }
-  
+
   subscription(){
     this.toggleSubscription(false);
   }
 
   render() {
-    
+
     return (
       <div className="app">
         <NavBar showConnect={this.toggleConnection.bind(this,true)}
                 showSubscription={this.toggleSubscription.bind(this,true)}/>
-                
+
         <div className="content">
-          
           <OptionsNav addFortune={this.toggleFortune.bind(this,true)} />
           <Fortunes />
         </div>
@@ -70,7 +72,7 @@ class App extends Component {
           onOk={this.addFortune} onCancel={this.toggleFortune.bind(this,false)}
           okText="Ajouter" cancelText="Annuler"
         >
-          <Input type="textarea" rows={4} />
+          <Input type="textarea" rows={4} onChange={this.handleForturneChange} />
         </Modal>
         <Modal title="Connexion" visible={this.state.visibleConnection}
           onOk={this.connect} onCancel={this.toggleConnection.bind(this,false)}
@@ -100,8 +102,8 @@ class App extends Component {
                 <Input addonBefore={<Icon type="lock" />} type="password" placeholder="confirmer le mot de passe" />
             </FormItem>
           </Form>
-        </Modal>  
-        
+        </Modal>
+
       </div>
     );
   }
