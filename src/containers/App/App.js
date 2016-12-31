@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 import NavBar from '../NavBar/NavBar';
 import OptionsNav from '../OptionsNav/OptionsNav';
 import Fortunes from '../Fortunes/Fortunes';
@@ -8,6 +9,7 @@ import './App.css';
 const InputGroup = Input.Group;
 const FormItem = Form.Item;
 
+@inject('AppState')
 class App extends Component {
   constructor(props){
     super(props);
@@ -17,45 +19,46 @@ class App extends Component {
       visibleSubscription : false,
       fortune: ""
     };
-    this.toggleFortune = this.toggleFortune.bind(this);
-    this.addFortune = this.addFortune.bind(this);
   }
 
-  toggleFortune(val){
+  toggleFortune = (val) => {
     this.setState({
       visibleFortune: val,
     });
-  }
+  };
 
-  handleForturneChange(event) {
+  handleForturneChange = (event) => {
     this.setState({fortune: event.target.value});
-  }
+  };
 
+  addFortune = () => {
+    this.props.AppState.test();
+  };
 
-  toggleConnection(val){
+  toggleConnection = (val) => {
     this.setState({
       visibleConnection: val,
     });
-  }
+  };
 
-  toggleSubscription(val){
+  toggleSubscription = (val) => {
     this.setState({
       visibleSubscription: val,
     });
-  }
+  };
 
-  addFortune(){
+  addFortune = () => {
     this.toggleFortune(false);
     console.log(this.state.fortune);
-  }
+  };
 
-  connect(){
+  connect = () => {
     this.toggleConnection(false);
-  }
+  };
 
-  subscription(){
+  subscription = () => {
     this.toggleSubscription(false);
-  }
+  };
 
   render() {
 

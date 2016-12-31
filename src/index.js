@@ -1,16 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {Provider} from 'react-redux';
+import {Provider} from 'mobx-react';
 import {Router, hashHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
-import store from './store';
+import {RouterStore, syncHistoryWithStore} from 'mobx-react-router';
+import stores from './stores';
 import routes from './routes';
 
-const history = syncHistoryWithStore(hashHistory, store);
+const routingStore = new RouterStore();
+
+stores.routing = routingStore;
+
+const history = syncHistoryWithStore(hashHistory, routingStore);
 
 ReactDOM.render((
-    <Provider store={store}>
+    <Provider {...stores}>
       <div>
         <Router history={history}>
           {routes}
