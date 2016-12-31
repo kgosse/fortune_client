@@ -11,21 +11,21 @@ class App extends Component {
     this.state = {
       visibleFortune : false,
       visibleConnection : false
-    }
+    };
     this.toggleFortune = this.toggleFortune.bind(this);
     this.addFortune = this.addFortune.bind(this);
   }
-  
+
   toggleFortune(val){
     this.setState({
       visibleFortune: val,
     });
   }
-  
+
   addFortune(){
     this.toggleFortune(false);
   }
-  
+
   render() {
     return (
       <div className="app">
