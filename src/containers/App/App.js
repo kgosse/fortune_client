@@ -17,6 +17,8 @@ class App extends Component {
     this.addFortune = this.addFortune.bind(this);
     this.toggleConnection = this.toggleConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.toggleSubscription = this.toggleSubscription.bind(this);
+    this.subscription = this.subscription.bind(this);
   }
 
   toggleFortune(val){
