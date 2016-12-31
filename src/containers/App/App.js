@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import NavBar from '../NavBar/NavBar';
 import OptionsNav from '../OptionsNav/OptionsNav';
 import Fortunes from '../Fortunes/Fortunes';
-import {Modal, Input} from 'antd';
+import {Modal, Input, Col, Form, Icon, Button} from 'antd';
 import './App.css';
+
+const InputGroup = Input.Group;
+const FormItem = Form.Item;
 
 class App extends Component {
   constructor(props){
@@ -52,11 +55,14 @@ class App extends Component {
   }
 
   render() {
+    
     return (
       <div className="app">
         <NavBar showConnect={this.toggleConnection.bind(this,true)}
                 showSubscription={this.toggleSubscription.bind(this,true)}/>
+                
         <div className="content">
+          
           <OptionsNav addFortune={this.toggleFortune.bind(this,true)} />
           <Fortunes />
         </div>
@@ -68,18 +74,32 @@ class App extends Component {
         </Modal>
         <Modal title="Connexion" visible={this.state.visibleConnection}
           onOk={this.connect} onCancel={this.toggleConnection.bind(this,false)}
-          okText="Ok" cancelText="Annuler"
+          okText="Log In" cancelText="Annuler" width={400}
         >
-          <Input placeholder="nom d'utilisateur"/>
-          <Input type="password" placeholder="mot de passe"/>
+          <Form>
+            <FormItem>
+                <Input addonBefore={<Icon type="user" />} placeholder="Nom d'utilisateur" />
+            </FormItem>
+            <FormItem>
+                <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Mot de passe" />
+            </FormItem>
+          </Form>
         </Modal>
         <Modal title="S'incrire" visible={this.state.visibleSubscription}
           onOk={this.subscription} onCancel={this.toggleSubscription.bind(this,false)}
-          okText="Ok" cancelText="Annuler"
+          okText="Ok" cancelText="Annuler" width={400}
         >
-          <Input placeholder="nom d'utilisateur"/>
-          <Input type="password" placeholder="mot de passe"/>
-          <Input type="password" placeholder="confirmer le mot de passe"/>
+          <Form>
+            <FormItem>
+                <Input addonBefore={<Icon type="user" />} placeholder="Nom d'utilisateur" />
+            </FormItem>
+            <FormItem>
+                <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Mot de passe" />
+            </FormItem>
+            <FormItem>
+                <Input addonBefore={<Icon type="lock" />} type="password" placeholder="confirmer le mot de passe" />
+            </FormItem>
+          </Form>
         </Modal>  
         
       </div>
