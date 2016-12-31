@@ -40,6 +40,7 @@ class Fortune extends Component {
           <div className="buttons">
             <Button type="ghost"  icon="dislike" size={size}><Badge count={25} style={{backgroundColor: 'red'}} /></Button>
             <Button type="ghost" icon="like" size={size}><Badge count={25} style={{backgroundColor: 'green'}}/></Button>
+            <Badge count={109} overflowCount={109} style={{ backgroundColor: '#40A5ED' }} />
           </div>
           <div className="author">
             <span>Kévin Gossé 30/12/16 - 23:05</span>
