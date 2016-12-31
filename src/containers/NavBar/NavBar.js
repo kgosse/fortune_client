@@ -13,8 +13,8 @@ class NavBar extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
-            <NavItem eventKey={2} href="#">Se connecter</NavItem>
-            <NavItem eventKey={2} href="#">S'inscrire</NavItem>
+            <NavItem eventKey={2} href="#" onClick={this.props.showConnect}>Se connecter</NavItem>
+            <NavItem eventKey={2} href="#" onClick={this.props.showSubscription}>S'inscrire</NavItem>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

@@ -27,10 +27,10 @@ class OptionsNav extends Component {
     return (
       <div className="optionsnav">
         <RadioGroup onChange={this.onChange} value={this.state.value}>
-          <Radio value={1}>All</Radio>
+          <Radio value={1}>Toutes</Radio>
           <Radio value={2}>Top 30</Radio>
         </RadioGroup>
-        <Button type="primary" onClick={this.props.addFortune}>Add Fortune</Button>
+        <Button type="primary" onClick={this.props.addFortune}>Ajouter Fortune</Button>
       </div>
     );
   }
