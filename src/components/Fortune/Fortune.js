@@ -31,11 +31,13 @@ class Fortune extends Component {
         <Button type="ghost" shape="circle" icon="edit" />
       </div>
     );
+
+    const {message, time, user} = this.props.fortune;
     return (
       <div className="card">
         <Card extra={this.state.hover ? extra : null} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
           <div className="message">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab aliquid cum delectus doloribus, eos iste nesciunt nisi numquam optio pariatur placeat praesentium, quaerat quas quo reiciendis repellat sapiente sint.
+            {message}
           </div>
           <div className="buttons">
             <Button type="ghost"  icon="dislike" size={size}><Badge count={25} style={{backgroundColor: 'red'}} /></Button>

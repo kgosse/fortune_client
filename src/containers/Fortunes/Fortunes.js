@@ -22,10 +22,12 @@ class Fortunes extends Component {
 
 
   render() {
+    const fortunes = this.props.fortunes.map((f, i) => {
+      return <Fortune key={i} fortune={f}/>
+    });
     return (
       <div className="fortunes">
-        <Fortune />
-        <Fortune />
+        {fortunes}
         <div>
           <Pagination current={this.state.current} onChange={this.onChange} total={50} />
         </div>
