@@ -41,7 +41,7 @@ class App extends Component {
 
   toggleFortune = (val) => {
     this.setState({
-      visibleFortune: val,
+      visibleFortune: val
     });
   };
 
@@ -65,6 +65,7 @@ class App extends Component {
     this.props.AppState.postFortune({
       message: this.state.fortune
     });
+    this.setState({fortune: ""});
     // this.toggleFortune(false);
   };
 
@@ -91,10 +92,11 @@ class App extends Component {
       console.log("SUCCESS", this.props.AppState.success);
 
       if (this.props.AppState.success.postFortune) {
-        success( "La fortune a été ajoutée avec succès.");
+        success("La fortune a été ajoutée avec succès.");
         this.props.AppState.setSuccess({postFortune: null});
+        this.fortuneTextarea.refs.input.value = "";
       } else if (this.props.AppState.errors.postFortune) {
-        error( "Erreur lors de l'ajout de la fortune");
+        error("Erreur lors de l'ajout de la fortune");
         this.props.AppState.setErrors({postFortune: null});
       }
     }
@@ -120,7 +122,7 @@ class App extends Component {
              ]}
       >
         <Input type="textarea" rows={4}
-               onChange={this.debounceEventHandler(this.handleForturneChange, 1000)}/>
+               onChange={this.debounceEventHandler(this.handleForturneChange, 1000)} ref={e => this.fortuneTextarea = e} />
       </Modal>
     );
   };
