@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, map} from 'mobx';
 import axios from 'axios';
 
 class AppState {
@@ -8,6 +8,9 @@ class AppState {
   @observable errors;
   @observable success;
 
+  @observable likes;
+  @observable dislikes;
+
   @observable fortunes;
 
   static API = 'http://localhost:3001';
@@ -16,6 +19,8 @@ class AppState {
     this.authenticated = false;
 
     this.fortunes = [];
+    this.likes = map();
+    this.dislikes = map();
 
     this.requests = {
       isPostingFortune: false,
@@ -25,7 +30,9 @@ class AppState {
 
     this.errors = {
       postFortune: null,
-      getFortunes: null
+      getFortunes: null,
+      like: null,
+      dislike: null
     };
 
     this.success = {
@@ -40,6 +47,43 @@ class AppState {
     console.log(data);
     data.length > 0 ? this.setData(data) : this.setSingle(data);
   }
+
+  @action like(id) {
+    fetch(`${AppState.API}/api/Fortunes/like?id=${id}`, {
+      method: 'PUT',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(action("like-json", e => e.json()))
+      .then(action("like-success", (v) => {
+        this.likes.set(id.toString(), v.like);
+        this.fortunes.find(e => e.id === id).like = v.like;
+        console.log(this.likes);
+      }))
+      .catch (action("like-error", (e) => {
+        console.log(e);
+      }));
+  }
+
+  @action dislike(id) {
+    fetch(`${AppState.API}/api/Fortunes/dislike?id=${id}`, {
+      method: 'PUT',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action("dislike-success", (v) => {
+        this.dislikes.set(id.toString(), v.dislike);
+        this.fortunes.find(e => e.id === id).dislike = v.dislike;
+        console.log(this.dislikes);
+      }))
+      .catch (action("dislike-error", (e) => {
+        console.log(e);
+      }));
+  }
+
 
   @action postFortune(data) {
     this.requests.isPostingFortune = true;
@@ -71,14 +115,14 @@ class AppState {
       method: 'GET'
     })
       .then(e => e.json())
-      .then((response) => {
+      .then(action('getFortunes-success', (response) => {
         this.requests.isGettingFortunes = false;
         this.fortunes = response;
-      })
-      .catch ((e) => {
+      }))
+      .catch (action('getFortunes-error', (e) => {
         this.requests.isGettingFortunes = false;
         this.errors.postFortune = e;
-      });
+      }));
   }
 
   @action setSuccess(val) {

@@ -35,9 +35,19 @@ class App extends Component {
       visibleConnection : false,
       visibleSubscription : false,
       fortune: "",
-      isPostingFortune: false
+      isPostingFortune: false,
+      likes: null,
+      dislikes: null
     };
   }
+
+  like = (id) => {
+    this.props.AppState.like(id);
+  };
+
+  dislike = (id) => {
+    this.props.AppState.dislike(id);
+  };
 
   toggleFortune = (val) => {
     this.setState({
@@ -100,7 +110,9 @@ class App extends Component {
     }
 
     this.setState({
-      isPostingFortune: this.props.AppState.requests.isPostingFortune
+      isPostingFortune: this.props.AppState.requests.isPostingFortune,
+      likes: this.props.AppState.likes,
+      dislikes: this.props.AppState.dislikes
     });
 
   }
@@ -166,6 +178,8 @@ class App extends Component {
 
   render() {
 
+    console.log("App", this.props.AppState.likes);
+
     return (
       <div className="app">
         <NavBar showConnect={this.toggleConnection.bind(this,true)}
@@ -173,7 +187,12 @@ class App extends Component {
 
         <div className="content">
           <OptionsNav addFortune={this.toggleFortune.bind(this,true)} />
-          <Fortunes fortunes={this.props.AppState.fortunes}/>
+          <Fortunes fortunes={this.props.AppState.fortunes}
+                    likes={this.props.AppState.likes}
+                    dislikes={this.props.AppState.dislikes}
+                    like={this.like}
+                    dislike={this.dislike}
+          />
         </div>
 
         {this.signinModal()}

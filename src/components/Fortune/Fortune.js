@@ -32,7 +32,7 @@ class Fortune extends Component {
       </div>
     );
 
-    let {message, time, user, like = 0, dislike = 0} = this.props.fortune;
+    let {id, message, time, user, like = 0, dislike = 0} = this.props.fortune;
 
     return (
       <div className="card">
@@ -41,8 +41,22 @@ class Fortune extends Component {
             {message}
           </div>
           <div className="buttons">
-            <Button type="ghost"  icon="dislike" size={size}><Badge count={dislike} style={{backgroundColor: 'red'}} /></Button>
-            <Button type="ghost" icon="like" size={size}><Badge count={like} style={{backgroundColor: 'green'}}/></Button>
+            <Button
+              type={this.props.disliked ? 'primary' : 'ghost'}
+              icon="dislike"
+              size={size}
+              onClick={() => this.props.onDislike(id)}
+            >
+              <Badge count={dislike} style={{backgroundColor: 'red'}} />
+            </Button>
+            <Button
+              type={this.props.liked ? 'primary' : 'ghost'}
+              icon="like"
+              size={size}
+              onClick={() => this.props.onLike(id)}
+            >
+              <Badge count={like} style={{backgroundColor: 'green'}}/>
+            </Button>
             <Badge text={like - dislike}
                    status={ (like - dislike) > 0 ? 'success': ((like - dislike) == 0 ? 'default':'error')}
                    overflowCount={1000} style={{ backgroundColor: (like - dislike) >= 0 ? 'green': 'red' }} />
