@@ -11,7 +11,7 @@ import './App.css';
 const InputGroup = Input.Group;
 const FormItem = Form.Item;
 
-const DURATION = 4;
+const DURATION = 7;
 
 const success = function (m) {
   message.success(m, DURATION);
@@ -88,8 +88,6 @@ class App extends Component {
   componentWillReact() {
     if (this.state.isPostingFortune && !this.props.AppState.requests.isPostingFortune) {
       this.setState({visibleFortune: false});
-
-      console.log("SUCCESS", this.props.AppState.success);
 
       if (this.props.AppState.success.postFortune) {
         success("La fortune a été ajoutée avec succès.");
