@@ -41,6 +41,10 @@ class App extends Component {
     };
   }
 
+  handlePaginate = (page) => {
+    this.props.AppState.getFortunes(page);
+  };
+
   handleLike = (id) => {
     if (this.props.AppState.likes.has(id.toString())) {
       this.props.AppState.unlike(id);
@@ -194,12 +198,17 @@ class App extends Component {
                 showSubscription={this.toggleSubscription.bind(this,true)}/>
 
         <div className="content">
-          <OptionsNav addFortune={this.toggleFortune.bind(this,true)} />
+          <OptionsNav
+            addFortune={this.toggleFortune.bind(this,true)}
+            pagination={this.props.AppState.pagination}
+          />
           <Fortunes fortunes={this.props.AppState.fortunes}
                     likes={this.props.AppState.likes}
                     dislikes={this.props.AppState.dislikes}
                     like={this.handleLike}
                     dislike={this.handleDislike}
+                    pagination={this.props.AppState.pagination}
+                    onPaginate={this.handlePaginate}
           />
         </div>
 

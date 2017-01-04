@@ -1,6 +1,13 @@
 import { observable, action, map} from 'mobx';
 import axios from 'axios';
 
+
+const defaultPagination = {
+  order: "time DESC",
+  limit: 5,
+  offset: 0
+};
+
 class AppState {
   @observable authenticated;
 
@@ -13,6 +20,8 @@ class AppState {
 
   @observable fortunes;
 
+  @observable pagination;
+
   static API = 'http://localhost:3001';
 
   constructor() {
@@ -21,6 +30,12 @@ class AppState {
     this.fortunes = [];
     this.likes = map();
     this.dislikes = map();
+
+    this.pagination = {
+      count: 0,
+      pageSize: 5,
+      current: 1
+    };
 
     this.requests = {
       isPostingFortune: false,
@@ -39,7 +54,8 @@ class AppState {
       postFortune: null
     };
 
-    this.getFortunes();
+   this.fortunesCount();
+   this.getFortunes();
   }
 
   async fetchData(pathname, id) {
@@ -47,6 +63,22 @@ class AppState {
     console.log(data);
     data.length > 0 ? this.setData(data) : this.setSingle(data);
   }
+
+  @action fortunesCount() {
+    fetch(`${AppState.API}/api/Fortunes/count`, {
+      method: 'GET',
+      headers: new Headers({
+        'Accept': 'application/json'
+      })
+    })
+      .then(action("fortunesCount-json", e => e.json()))
+      .then(action("fortunesCount-success", (v) => {
+        this.pagination.count = v.count;
+      }))
+      .catch (action("fortunesCount-error", (e) => {
+        console.log(e);
+      }));
+  };
 
   @action like(id) {
     fetch(`${AppState.API}/api/Fortunes/like?id=${id}`, {
@@ -133,6 +165,7 @@ class AppState {
       .then(action("postFortune-success", () => {
         this.requests.isPostingFortune = false;
         this.setSuccess({postFortune: true});
+        this.fortunesCount();
         this.getFortunes();
       }))
       .catch (action("postFortune-error", (e) => {
@@ -141,17 +174,27 @@ class AppState {
       }));
   }
 
-  @action getFortunes() {
+  @action getFortunes(page = 1) {
     this.requests.isGettingFortunes = true;
     this.errors.getFortunes = false;
 
-    fetch(`${AppState.API}/api/Fortunes`, {
-      method: 'GET'
+    const pagination = {
+      limit: this.pagination.pageSize,
+      offset: page - 1,
+      order: 'time DESC'
+    };
+
+    fetch(`${AppState.API}/api/Fortunes?filter=${encodeURIComponent(JSON.stringify(pagination))}`, {
+      method: 'GET',
+      headers: new Headers({
+        'Accept': 'application/json'
+      })
     })
       .then(e => e.json())
       .then(action('getFortunes-success', (response) => {
         this.requests.isGettingFortunes = false;
         this.fortunes = response;
+        this.pagination.current = page;
       }))
       .catch (action('getFortunes-error', (e) => {
         this.requests.isGettingFortunes = false;
@@ -202,6 +245,13 @@ class AppState {
     })
   }
 
+}
+
+function encodeQueryData(data) {
+  let ret = [];
+  for (let d in data)
+    ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+  return ret.join('&');
 }
 
 export default AppState;

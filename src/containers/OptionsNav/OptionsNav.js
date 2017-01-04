@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Radio, Button} from 'antd';
+import { observer } from 'mobx-react';
 import './OptionsNav.css';
 
 const RadioGroup = Radio.Group;
 
-
+@observer
 class OptionsNav extends Component {
   constructor(props) {
     super(props);
@@ -27,7 +28,7 @@ class OptionsNav extends Component {
     return (
       <div className="optionsnav">
         <RadioGroup onChange={this.onChange} value={this.state.value}>
-          <Radio value={1}>Toutes</Radio>
+          <Radio value={1}>Toutes ({this.props.pagination.count})</Radio>
           <Radio value={2}>Top 30</Radio>
         </RadioGroup>
         <Button type="primary" onClick={this.props.addFortune}>Ajouter Fortune</Button>

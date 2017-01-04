@@ -32,11 +32,20 @@ class Fortunes extends Component {
       />
     });
 
+    const pagination = this.props.pagination.count <= this.props.pagination.pageSize ?
+      null :
+      (<Pagination
+        current={this.props.pagination.current}
+        onChange={this.props.onPaginate}
+        total={this.props.pagination.count}
+        pageSize={this.props.pagination.pageSize}
+      />);
+
     return (
       <div className="fortunes">
         {fortunes}
         <div>
-          <Pagination current={this.state.current} onChange={this.onChange} total={50} />
+          {pagination}
         </div>
       </div>
     );
