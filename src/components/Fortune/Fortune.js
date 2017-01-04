@@ -32,7 +32,8 @@ class Fortune extends Component {
       </div>
     );
 
-    const {message, time, user} = this.props.fortune;
+    let {message, time, user, like = 0, dislike = 0} = this.props.fortune;
+
     return (
       <div className="card">
         <Card extra={this.state.hover ? extra : null} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
@@ -40,9 +41,11 @@ class Fortune extends Component {
             {message}
           </div>
           <div className="buttons">
-            <Button type="ghost"  icon="dislike" size={size}><Badge count={25} style={{backgroundColor: 'red'}} /></Button>
-            <Button type="ghost" icon="like" size={size}><Badge count={25} style={{backgroundColor: 'green'}}/></Button>
-            <Badge count={109} overflowCount={109} style={{ backgroundColor: '#40A5ED' }} />
+            <Button type="ghost"  icon="dislike" size={size}><Badge count={dislike} style={{backgroundColor: 'red'}} /></Button>
+            <Button type="ghost" icon="like" size={size}><Badge count={like} style={{backgroundColor: 'green'}}/></Button>
+            <Badge text={like - dislike}
+                   status={ (like - dislike) > 0 ? 'success': ((like - dislike) == 0 ? 'default':'error')}
+                   overflowCount={1000} style={{ backgroundColor: (like - dislike) >= 0 ? 'green': 'red' }} />
           </div>
           <div className="author">
             <span>Kévin Gossé 30/12/16 - 23:05</span>
