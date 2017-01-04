@@ -59,11 +59,28 @@ class AppState {
       .then(action("like-success", (v) => {
         this.likes.set(id.toString(), v.like);
         this.fortunes.find(e => e.id === id).like = v.like;
-        console.log(this.likes);
       }))
       .catch (action("like-error", (e) => {
         console.log(e);
       }));
+  }
+
+  @action unlike(id) {
+/*    fetch(`${AppState.API}/api/Fortunes/unlike?id=${id}`, {
+      method: 'PUT',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(action("unlike-json", e => e.json()))
+      .then(action("unlike-success", (v) => {*/
+        this.likes.delete(id.toString());
+        this.fortunes.find(e => e.id === id).like -= 1;
+/*    this.fortunes.find(e => e.id === id).like = v.like;
+      }))
+      .catch (action("unlike-error", (e) => {
+        console.log(e);
+      }));*/
   }
 
   @action dislike(id) {
@@ -77,11 +94,28 @@ class AppState {
       .then(action("dislike-success", (v) => {
         this.dislikes.set(id.toString(), v.dislike);
         this.fortunes.find(e => e.id === id).dislike = v.dislike;
-        console.log(this.dislikes);
       }))
       .catch (action("dislike-error", (e) => {
         console.log(e);
       }));
+  }
+
+  @action undislike(id) {
+/*    fetch(`${AppState.API}/api/Fortunes/undislike?id=${id}`, {
+      method: 'PUT',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action("dislike-success", (v) => {*/
+        this.dislikes.delete(id.toString());
+        this.fortunes.find(e => e.id === id).dislike -= 1;
+/*    this.fortunes.find(e => e.id === id).dislike = v.dislike;
+      }))
+      .catch (action("dislike-error", (e) => {
+        console.log(e);
+      }));*/
   }
 
 

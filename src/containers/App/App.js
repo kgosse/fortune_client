@@ -41,12 +41,20 @@ class App extends Component {
     };
   }
 
-  like = (id) => {
-    this.props.AppState.like(id);
+  handleLike = (id) => {
+    if (this.props.AppState.likes.has(id.toString())) {
+      this.props.AppState.unlike(id);
+    } else {
+      this.props.AppState.like(id);
+    }
   };
 
-  dislike = (id) => {
-    this.props.AppState.dislike(id);
+  handleDislike = (id) => {
+    if (this.props.AppState.dislikes.has(id.toString())) {
+      this.props.AppState.undislike(id);
+    } else {
+      this.props.AppState.dislike(id);
+    }
   };
 
   toggleFortune = (val) => {
@@ -190,8 +198,8 @@ class App extends Component {
           <Fortunes fortunes={this.props.AppState.fortunes}
                     likes={this.props.AppState.likes}
                     dislikes={this.props.AppState.dislikes}
-                    like={this.like}
-                    dislike={this.dislike}
+                    like={this.handleLike}
+                    dislike={this.handleDislike}
           />
         </div>
 
