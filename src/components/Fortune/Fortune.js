@@ -32,7 +32,12 @@ class Fortune extends Component {
       </div>
     );
 
-    let {id, message, time, user, like = 0, dislike = 0} = this.props.fortune;
+    const unknownUser = {
+      id: -1,
+      name: 'Unknown'
+    };
+
+    let {id, message, time, user = unknownUser, like = 0, dislike = 0} = this.props.fortune;
 
     return (
       <div className="card">
@@ -62,12 +67,32 @@ class Fortune extends Component {
                    overflowCount={1000} style={{ backgroundColor: (like - dislike) >= 0 ? 'green': 'red' }} />
           </div>
           <div className="author">
-            <span>Kévin Gossé 30/12/16 - 23:05</span>
+            <span>{`${user.name} ${getFormattedDate(time)}`}</span>
           </div>
         </Card>
       </div>
     )
   }
+}
+
+function getFormattedDate(time) {
+  let date = new Date(time);
+
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let hour = date.getHours();
+  let min = date.getMinutes();
+  let sec = date.getSeconds();
+
+  month = (month < 10 ? "0" : "") + month;
+  day = (day < 10 ? "0" : "") + day;
+  hour = (hour < 10 ? "0" : "") + hour;
+  min = (min < 10 ? "0" : "") + min;
+  sec = (sec < 10 ? "0" : "") + sec;
+
+  let str =  day + "/" + month + "/" + date.getFullYear() + " " +  hour + ":" + min + ":" + sec;
+
+  return str;
 }
 
 export default Fortune;
