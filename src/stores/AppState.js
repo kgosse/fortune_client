@@ -1,16 +1,7 @@
 import { observable, action, map} from 'mobx';
 import axios from 'axios';
 
-
-const defaultPagination = {
-  order: "time DESC",
-  limit: 5,
-  offset: 0
-};
-
 class AppState {
-  @observable authenticated;
-
   @observable requests;
   @observable errors;
   @observable success;
@@ -22,6 +13,8 @@ class AppState {
 
   @observable pagination;
 
+  @observable user;
+
   static API = 'http://localhost:3001';
 
   constructor() {
@@ -30,6 +23,11 @@ class AppState {
     this.fortunes = [];
     this.likes = map();
     this.dislikes = map();
+
+    this.user = {
+      authenticated: false,
+      data: null
+    };
 
     this.pagination = {
       count: 0,
@@ -54,14 +52,8 @@ class AppState {
       postFortune: null
     };
 
-   this.fortunesCount();
-   this.getFortunes();
-  }
-
-  async fetchData(pathname, id) {
-    let {data} = await axios.get(`https://jsonplaceholder.typicode.com${pathname}`);
-    console.log(data);
-    data.length > 0 ? this.setData(data) : this.setSingle(data);
+    this.fortunesCount();
+    this.getFortunes();
   }
 
   @action fortunesCount() {
@@ -98,21 +90,20 @@ class AppState {
   }
 
   @action unlike(id) {
-/*    fetch(`${AppState.API}/api/Fortunes/unlike?id=${id}`, {
+    fetch(`${AppState.API}/api/Fortunes/unlike?id=${id}`, {
       method: 'PUT',
       headers: new Headers({
         'Content-Type': 'application/json'
       })
     })
       .then(action("unlike-json", e => e.json()))
-      .then(action("unlike-success", (v) => {*/
+      .then(action("unlike-success", (v) => {
         this.likes.delete(id.toString());
         this.fortunes.find(e => e.id === id).like -= 1;
-/*    this.fortunes.find(e => e.id === id).like = v.like;
       }))
       .catch (action("unlike-error", (e) => {
         console.log(e);
-      }));*/
+      }));
   }
 
   @action dislike(id) {
@@ -133,21 +124,20 @@ class AppState {
   }
 
   @action undislike(id) {
-/*    fetch(`${AppState.API}/api/Fortunes/undislike?id=${id}`, {
+    fetch(`${AppState.API}/api/Fortunes/undislike?id=${id}`, {
       method: 'PUT',
       headers: new Headers({
         'Content-Type': 'application/json'
       })
     })
       .then(e => e.json())
-      .then(action("dislike-success", (v) => {*/
+      .then(action("dislike-success", (v) => {
         this.dislikes.delete(id.toString());
-        this.fortunes.find(e => e.id === id).dislike -= 1;
-/*    this.fortunes.find(e => e.id === id).dislike = v.dislike;
+        this.fortunes.find(e => e.id === id).dislike = v.dislike;
       }))
       .catch (action("dislike-error", (e) => {
         console.log(e);
-      }));*/
+      }));
   }
 
 

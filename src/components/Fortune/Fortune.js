@@ -37,11 +37,15 @@ class Fortune extends Component {
       name: 'Unknown'
     };
 
+    const {user: AppUser} = this.props;
+
     let {id, message, time, user = unknownUser, like = 0, dislike = 0} = this.props.fortune;
 
     return (
       <div className="card">
-        <Card extra={this.state.hover ? extra : null} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+        <Card extra={this.state.hover && AppUser.authenticated && user.id === AppUser.data.id ? extra : null}
+              onMouseEnter={this.onMouseEnter}
+              onMouseLeave={this.onMouseLeave}>
           <div className="message">
             {message}
           </div>

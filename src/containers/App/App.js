@@ -209,6 +209,7 @@ class App extends Component {
                     dislike={this.handleDislike}
                     pagination={this.props.AppState.pagination}
                     onPaginate={this.handlePaginate}
+                    user={this.props.AppState.user}
           />
         </div>
 

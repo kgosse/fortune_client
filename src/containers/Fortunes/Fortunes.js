@@ -29,6 +29,7 @@ class Fortunes extends Component {
                       onDislike={this.props.dislike}
                       liked={this.props.likes.has(f.id.toString())}
                       disliked={this.props.dislikes.has(f.id.toString())}
+                      user={this.props.user}
       />
     });
 
