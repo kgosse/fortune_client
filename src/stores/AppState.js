@@ -38,22 +38,56 @@ class AppState {
     this.requests = {
       isPostingFortune: false,
       isGettingFortunes: false,
-      isAuthenticating: false
+      isAuthenticating: false,
+      isRegistering: false
     };
 
     this.errors = {
       postFortune: null,
       getFortunes: null,
       like: null,
-      dislike: null
+      dislike: null,
+      register: null
     };
 
     this.success = {
-      postFortune: null
+      postFortune: null,
+      register: null
     };
 
     this.fortunesCount();
     this.getFortunes();
+  }
+
+  @action signUp(data) {
+    this.requests.isRegistering = true;
+    this.errors.register = null;
+
+    fetch(`${AppState.API}/api/Owners`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(action("signUp-json", r => {
+        if (!r.ok) {
+          throw Error(r.statusText);
+        }
+        return r.json();
+      }))
+      .then(action("signUp-success", (v) => {
+        this.requests.isRegistering = false;
+        this.setSuccess({register: true});
+      }))
+      .catch (action("signUp-error", (e) => {
+        this.requests.isRegistering = false;
+        this.errors.register = e;
+      }));
+  }
+
+  @action signIn(data) {
+
   }
 
   @action fortunesCount() {
@@ -157,6 +191,7 @@ class AppState {
         this.setSuccess({postFortune: true});
         this.fortunesCount();
         this.getFortunes();
+        this.pagination.current = 1;
       }))
       .catch (action("postFortune-error", (e) => {
         this.requests.isPostingFortune = false;

@@ -36,8 +36,7 @@ class App extends Component {
       visibleSubscription : false,
       fortune: "",
       isPostingFortune: false,
-      likes: null,
-      dislikes: null
+      isRegistering: false
     };
   }
 
@@ -84,11 +83,13 @@ class App extends Component {
   };
 
   addFortune = () => {
+    if (this.props.AppState.requests.isPostingFortune) {
+      return;
+    }
     this.props.AppState.postFortune({
       message: this.state.fortune
     });
     this.setState({fortune: ""});
-    // this.toggleFortune(false);
   };
 
   connect = () => {
@@ -96,7 +97,21 @@ class App extends Component {
   };
 
   subscription = () => {
-    this.toggleSubscription(false);
+    if (this.props.AppState.requests.isRegistering) {
+      return;
+    }
+    const username = this.suUsername.refs.input.value.trim();
+    const pass1 = this.suPass1.refs.input.value.trim();
+    const pass2 = this.suPass2.refs.input.value.trim();
+    if (username === "" || pass1 === "" || pass2 === "") {
+      error("Tous les champs sont obligatoires");
+      return;
+    } else if (pass1 != pass2) {
+      error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    this.setState({isRegistering: true});
+    this.props.AppState.signUp({username, password: pass1});
   };
 
   debounceEventHandler = (...args) => {
@@ -108,6 +123,7 @@ class App extends Component {
   };
 
   componentWillReact() {
+
     if (this.state.isPostingFortune && !this.props.AppState.requests.isPostingFortune) {
       this.setState({visibleFortune: false});
 
@@ -121,10 +137,25 @@ class App extends Component {
       }
     }
 
+    if (this.state.isRegistering && !this.props.AppState.requests.isRegistering) {
+      this.setState({visibleSubscription: false});
+
+      if (this.props.AppState.success.register) {
+        success("Nouvel utilisateur ajouté avec succès.");
+        this.props.AppState.setSuccess({register: null});
+        this.suUsername.refs.input.value = "";
+        this.suPass1.refs.input.value = "";
+        this.suPass2.refs.input.value = "";
+      } else if (this.props.AppState.errors.register) {
+        error("Erreur lors de la création de l'utilisateur");
+        this.props.AppState.setErrors({register: null});
+      }
+    }
+
+
     this.setState({
       isPostingFortune: this.props.AppState.requests.isPostingFortune,
-      likes: this.props.AppState.likes,
-      dislikes: this.props.AppState.dislikes
+      isRegistering: this.props.AppState.requests.isRegistering
     });
 
   }
@@ -170,18 +201,34 @@ class App extends Component {
   signupModal = () => {
     return (
       <Modal title="S'incrire" visible={this.state.visibleSubscription}
-             onOk={this.subscription} onCancel={this.toggleSubscription.bind(this,false)}
              okText="Ok" cancelText="Annuler" width={400}
+             footer={[
+               <Button key="back" type="ghost" size="large" onClick={() => this.toggleSubscription(false)}>Annuler</Button>,
+               <Button key="submit" type="primary" size="large"
+                       loading={this.props.AppState.requests.isRegistering}
+                       onClick={this.subscription}>
+                 Ajouter
+               </Button>,
+             ]}
       >
         <Form>
           <FormItem>
-            <Input addonBefore={<Icon type="user" />} placeholder="Nom d'utilisateur" />
+            <Input addonBefore={<Icon type="user" />}
+                   placeholder="Nom d'utilisateur"
+                   ref={e => this.suUsername = e}
+            />
           </FormItem>
           <FormItem>
-            <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Mot de passe" />
+            <Input addonBefore={<Icon type="lock" />} type="password"
+                   placeholder="Mot de passe"
+                   ref={e => this.suPass1 = e}
+            />
           </FormItem>
           <FormItem>
-            <Input addonBefore={<Icon type="lock" />} type="password" placeholder="confirmer le mot de passe" />
+            <Input addonBefore={<Icon type="lock" />} type="password"
+                   placeholder="confirmer le mot de passe"
+                   ref={e => this.suPass2 = e}
+            />
           </FormItem>
         </Form>
       </Modal>
@@ -194,12 +241,12 @@ class App extends Component {
 
     return (
       <div className="app">
-        <NavBar showConnect={this.toggleConnection.bind(this,true)}
-                showSubscription={this.toggleSubscription.bind(this,true)}/>
+        <NavBar showConnect={() => this.toggleConnection(true)}
+                showSubscription={() => this.toggleSubscription(true)}/>
 
         <div className="content">
           <OptionsNav
-            addFortune={this.toggleFortune.bind(this,true)}
+            addFortune={() => this.toggleFortune(true)}
             pagination={this.props.AppState.pagination}
           />
           <Fortunes fortunes={this.props.AppState.fortunes}
