@@ -94,7 +94,7 @@ class AppState {
           pageSize: 30,
           current: 1
         };
-        this.getFortunes(undefined,["total DESC", "like DESC", "time DESC"]);
+        this.getThirty();
         break;
     }
   }
@@ -315,6 +315,29 @@ class AppState {
       }));
   }
 
+  @action getThirty(userId) {
+    this.requests.isGettingFortunes = true;
+    this.errors.getFortunes = false;
+
+    fetch(`${AppState.API}/api/Fortunes/getthirty`, {
+      method: 'GET',
+      headers: new Headers({
+        'Accept': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action('getThirty-success', (response) => {
+        this.requests.isGettingFortunes = false;
+        this.fortunes = response.fortunes;
+        this.pagination.current = 1;
+      }))
+      .catch (action('getThirty-error', (e) => {
+        this.requests.isGettingFortunes = false;
+        this.errors.getFortunes = e;
+      }));
+  }
+
+
   @action getFortunes(page = 1, order) {
     this.requests.isGettingFortunes = true;
     this.errors.getFortunes = false;
@@ -339,7 +362,7 @@ class AppState {
       }))
       .catch (action('getFortunes-error', (e) => {
         this.requests.isGettingFortunes = false;
-        this.errors.postFortune = e;
+        this.errors.getFortunes = e;
       }));
   }
 

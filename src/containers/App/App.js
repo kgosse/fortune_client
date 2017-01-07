@@ -138,6 +138,10 @@ class App extends Component {
     this.props.AppState.signOut();
   };
 
+  handleRadio = (r) => {
+    this.props.AppState.changeRadio(r);
+  };
+
   handleDelete = (id) => {
 
   };
@@ -307,6 +311,7 @@ class App extends Component {
             pagination={this.props.AppState.pagination}
             radios={this.props.AppState.radios}
             user={this.props.AppState.user}
+            changeRadio={this.handleRadio}
           />
           <Fortunes fortunes={this.props.AppState.fortunes}
                     likes={this.props.AppState.likes}

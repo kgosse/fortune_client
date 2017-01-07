@@ -8,31 +8,22 @@ const RadioGroup = Radio.Group;
 
 @observer
 class OptionsNav extends Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      value: 1
-    };
-
-    this.onChange = this.onChange.bind(this);
-  }
-
-  onChange(e) {
-    console.log('radio checked', e.target.value);
-    this.setState({
-      value: e.target.value,
-    });
+  onChange = (e) => {
+    this.props.changeRadio(e.target.value);
   };
 
   render() {
     const {user} = this.props;
     let options = null;
 
+    const total = this.props.radios.current != RADIOS.one ?
+      null : `(${this.props.pagination.count})`;
+
     if (user.authenticated) {
       options = (
-        <RadioGroup onChange={this.onChange} value={this.state.value}>
-          <Radio value={RADIOS.one}>Toutes ({this.props.pagination.count})</Radio>
+        <RadioGroup onChange={this.onChange} value={this.props.radios.current}>
+          <Radio value={RADIOS.one}>Toutes {total}</Radio>
           <Radio value={RADIOS.two}>Top 30</Radio>
           <Radio value={RADIOS.three}>Mes fortunes</Radio>
           <Radio value={RADIOS.four}>Mon top 30</Radio>
@@ -40,8 +31,8 @@ class OptionsNav extends Component {
       );
     } else {
       options = (
-        <RadioGroup onChange={this.onChange} value={this.state.value}>
-          <Radio value={RADIOS.one}>Toutes ({this.props.pagination.count})</Radio>
+        <RadioGroup onChange={this.onChange} value={this.props.radios.current}>
+          <Radio value={RADIOS.one}>Toutes {total}</Radio>
           <Radio value={RADIOS.two}>Top 30</Radio>
         </RadioGroup>
       );
