@@ -59,17 +59,25 @@ class AppState {
       like: null,
       dislike: null,
       register: null,
-      authentication: null
+      authentication: null,
+      signOut: null
     };
 
     this.success = {
       postFortune: null,
       register: null,
-      authentication: null
+      authentication: null,
+      signOut: null
     };
 
     this.fortunesCount();
     this.getFortunes();
+  }
+
+  injectToken(url) {
+    return this.user.authenticated ?
+      url + `?access_token=${this.user.data.token.id}` :
+      url
   }
 
   @action changeRadio(v = RADIOS.one) {
@@ -127,6 +135,28 @@ class AppState {
       }));
   }
 
+  @action signOut() {
+    fetch(this.injectToken(`${AppState.API}/api/Owners/logout`), {
+      method: 'POST'
+    })
+      .then(action("signOut-json", r => {
+        if (!r.ok) {
+          throw Error(r.statusText);
+        }
+      }))
+      .then(action("signOut-success", () => {
+        this.user = {
+          authenticated: null
+        };
+        // handle fortune current page
+        this.success.signOut = true;
+      }))
+      .catch (action("signOut-error", (e) => {
+        this.errors.signOut = true;
+        console.log(e);
+      }));
+  };
+
   @action signUp(data) {
     this.requests.isRegistering = true;
     this.errors.register = null;
@@ -155,7 +185,7 @@ class AppState {
   }
 
   @action deleteFortune(id) {
-    fetch(`${AppState.API}/api/Fortunes/${id}`, {
+    fetch(this.injectToken(`${AppState.API}/api/Fortunes/${id}`), {
       method: 'DELETE',
       headers: new Headers({
         'Content-Type': 'application/json'
@@ -320,36 +350,6 @@ class AppState {
       ...val
     };
   }
-
-
-  @action setData(data) {
-    this.items = data;
-  }
-
-  @action test() {
-    console.log('Hello world mobx !!!');
-  }
-
-  @action setSingle(data) {
-    this.item = data;
-  }
-
-  @action clearItems() {
-    this.items = [];
-    this.item = {};
-  }
-
-  @action authenticate() {
-    return new Promise((resolve,reject) => {
-      this.authenticating = true;
-      setTimeout(() => {
-        this.authenticated = !this.authenticated;
-        this.authenticating = false;
-        resolve(this.authenticated);
-      }, 0)
-    })
-  }
-
 }
 
 function encodeQueryData(data) {

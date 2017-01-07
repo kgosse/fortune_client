@@ -6,6 +6,7 @@ import Fortunes from '../Fortunes/Fortunes';
 import { message, Modal, Input, Form, Icon, Button} from 'antd';
 import DevTools from 'mobx-react-devtools';
 import debounce from 'lodash/debounce';
+import Log from '../../components/Log/Log';
 import './App.css';
 
 const InputGroup = Input.Group;
@@ -134,7 +135,7 @@ class App extends Component {
   };
 
   handleLogout = () => {
-
+    this.props.AppState.signOut();
   };
 
   handleDelete = (id) => {
@@ -186,12 +187,18 @@ class App extends Component {
       }
     }
 
-
-
+    if (this.props.AppState.success.signOut) {
+      success("Déconnexion réussie.");
+      this.props.AppState.setSuccess({signOut: null});
+    } else if (this.props.AppState.errors.signOut) {
+      error("Erreur déconnexion.");
+      this.props.AppState.setErrors({signOut: null});
+    }
 
     this.setState({
       isPostingFortune: this.props.AppState.requests.isPostingFortune,
-      isRegistering: this.props.AppState.requests.isRegistering
+      isRegistering: this.props.AppState.requests.isRegistering,
+      isAuthenticating: this.props.AppState.requests.isAuthenticating
     });
 
   }
@@ -286,8 +293,6 @@ class App extends Component {
 
   render() {
 
-    console.log("App", this.props.AppState.likes);
-
     return (
       <div className="app">
         <NavBar showConnect={() => this.toggleConnection(true)}
@@ -319,6 +324,9 @@ class App extends Component {
         {this.signinModal()}
         {this.signupModal()}
         {this.fortuneModal()}
+
+        <Log {...this.props.AppState.errors}
+             {...this.props.AppState.success} />
 
         <DevTools />
       </div>
