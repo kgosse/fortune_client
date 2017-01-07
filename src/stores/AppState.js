@@ -100,6 +100,11 @@ class AppState {
         this.getUserFortunes();
         break;
       case RADIOS.four:
+        this.pagination = {
+          count: 30,
+          pageSize: 30,
+          current: 1
+        };
         this.getUserTopThirty();
         break;
     }
@@ -351,7 +356,7 @@ class AppState {
 
     const filter = {
       limit: this.pagination.pageSize,
-      offset: page - 1,
+      offset: (page - 1) * this.pagination.pageSize,
       order: order || 'time DESC',
       include: "owner"
     };
@@ -382,7 +387,7 @@ class AppState {
 
     const filter = {
       limit: this.pagination.pageSize,
-      offset: page - 1,
+      offset: (page - 1) * this.pagination.pageSize,
       include: "owner",
       order: "time DESC"
     };
