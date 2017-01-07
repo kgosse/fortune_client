@@ -36,7 +36,8 @@ class App extends Component {
       visibleSubscription : false,
       fortune: "",
       isPostingFortune: false,
-      isRegistering: false
+      isRegistering: false,
+      isAuthenticating: false
     };
   }
 
@@ -93,7 +94,17 @@ class App extends Component {
   };
 
   connect = () => {
-    this.toggleConnection(false);
+    if (this.props.AppState.requests.isAuthenticating) {
+      return;
+    }
+    const username = this.coUsername.refs.input.value.trim();
+    const password = this.coPassword.refs.input.value.trim();
+    if (username === "" || password === "") {
+      error("Tous les champs sont obligatoires");
+      return;
+    }
+    this.setState({isAuthenticating: true});
+    this.props.AppState.signIn({username, password});
   };
 
   subscription = () => {
@@ -126,12 +137,19 @@ class App extends Component {
 
   };
 
+  handleDelete = (id) => {
+
+  };
+
+  handleModify = (id) => {
+
+  };
+
   componentWillReact() {
 
     if (this.state.isPostingFortune && !this.props.AppState.requests.isPostingFortune) {
-      this.setState({visibleFortune: false});
-
       if (this.props.AppState.success.postFortune) {
+        this.setState({visibleFortune: false});
         success("La fortune a été ajoutée avec succès.");
         this.props.AppState.setSuccess({postFortune: null});
         this.fortuneTextarea.refs.input.value = "";
@@ -142,9 +160,8 @@ class App extends Component {
     }
 
     if (this.state.isRegistering && !this.props.AppState.requests.isRegistering) {
-      this.setState({visibleSubscription: false});
-
       if (this.props.AppState.success.register) {
+        this.setState({visibleSubscription: false});
         success("Nouvel utilisateur ajouté avec succès.");
         this.props.AppState.setSuccess({register: null});
         this.suUsername.refs.input.value = "";
@@ -155,6 +172,21 @@ class App extends Component {
         this.props.AppState.setErrors({register: null});
       }
     }
+
+    if (this.state.isAuthenticating && !this.props.AppState.requests.isAuthenticating) {
+      if (this.props.AppState.success.authentication) {
+        this.setState({visibleConnection: false});
+        success(`Bienvenue ${this.coUsername.refs.input.value} ;)`);
+        this.props.AppState.setSuccess({authentication: null});
+        this.coUsername.refs.input.value = "";
+        this.coPassword.refs.input.value = "";
+      } else if (this.props.AppState.errors.authentication) {
+        error("Erreur lors de la connection");
+        this.props.AppState.setErrors({authentication: null});
+      }
+    }
+
+
 
 
     this.setState({
@@ -187,15 +219,28 @@ class App extends Component {
   signinModal = () => {
     return (
       <Modal title="Connexion" visible={this.state.visibleConnection}
-             onOk={this.connect} onCancel={this.toggleConnection.bind(this,false)}
-             okText="Log In" cancelText="Annuler" width={400}
+             width={400}
+             footer={[
+               <Button key="back" type="ghost" size="large" onClick={() => this.toggleConnection(false)}>Annuler</Button>,
+               <Button key="submit" type="primary" size="large"
+                       loading={this.props.AppState.requests.isAuthenticating}
+                       onClick={this.connect}>
+                 Se connecter
+               </Button>,
+             ]}
       >
         <Form>
           <FormItem>
-            <Input addonBefore={<Icon type="user" />} placeholder="Nom d'utilisateur" />
+            <Input addonBefore={<Icon type="user" />}
+                   placeholder="Nom d'utilisateur"
+                   ref={e => this.coUsername = e}
+            />
           </FormItem>
           <FormItem>
-            <Input addonBefore={<Icon type="lock" />} type="password" placeholder="Mot de passe" />
+            <Input addonBefore={<Icon type="lock" />} type="password"
+                   placeholder="Mot de passe"
+                   ref={e => this.coPassword = e}
+            />
           </FormItem>
         </Form>
       </Modal>
@@ -205,7 +250,7 @@ class App extends Component {
   signupModal = () => {
     return (
       <Modal title="S'incrire" visible={this.state.visibleSubscription}
-             okText="Ok" cancelText="Annuler" width={400}
+             width={400}
              footer={[
                <Button key="back" type="ghost" size="large" onClick={() => this.toggleSubscription(false)}>Annuler</Button>,
                <Button key="submit" type="primary" size="large"
@@ -266,6 +311,8 @@ class App extends Component {
                     pagination={this.props.AppState.pagination}
                     onPaginate={this.handlePaginate}
                     user={this.props.AppState.user}
+                    delete={this.handleDelete}
+                    modify={this.handleModify}
           />
         </div>
 

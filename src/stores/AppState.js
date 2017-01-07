@@ -37,11 +37,7 @@ class AppState {
     };
 
     this.user = {
-      authenticated: true,
-      data: {
-        username: "kgosse",
-        id: 1
-      }
+      authenticated: false
     };
 
     this.pagination = {
@@ -62,12 +58,14 @@ class AppState {
       getFortunes: null,
       like: null,
       dislike: null,
-      register: null
+      register: null,
+      authentication: null
     };
 
     this.success = {
       postFortune: null,
-      register: null
+      register: null,
+      authentication: null
     };
 
     this.fortunesCount();
@@ -91,6 +89,42 @@ class AppState {
         this.getFortunes(undefined,["total DESC", "like DESC", "time DESC"]);
         break;
     }
+  }
+
+  @action signIn(data) {
+    this.requests.isAuthenticating = true;
+    this.errors.authentication = null;
+
+    fetch(`${AppState.API}/api/Owners/login`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(action("signIn-json", r => {
+        if (!r.ok) {
+          throw Error(r.statusText);
+        }
+        return r.json();
+      }))
+      .then(action("signIn-success", (v) => {
+        this.requests.isAuthenticating = false;
+        const {userId, ...token} = v;
+        this.user = {
+          authenticated: true,
+          data: {
+            id: userId,
+            username: data.username,
+            token
+          },
+        };
+        this.setSuccess({authentication: true});
+      }))
+      .catch (action("signIn-error", (e) => {
+        this.requests.isAuthenticating = false;
+        this.errors.authentication = e;
+      }));
   }
 
   @action signUp(data) {
@@ -120,8 +154,20 @@ class AppState {
       }));
   }
 
-  @action signIn(data) {
-
+  @action deleteFortune(id) {
+    fetch(`${AppState.API}/api/Fortunes/${id}`, {
+      method: 'DELETE',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action("deleteFortune-success", (v) => {
+        this.dislikes.delete(id.toString());
+      }))
+      .catch (action("deleteFortune-error", (e) => {
+        console.log(e);
+      }));
   }
 
   @action fortunesCount() {

@@ -23,27 +23,29 @@ class Fortune extends Component {
   }
 
   render() {
-    const size = 'default';
-
-    const extra = (
-      <div className="extra">
-        <Button type="ghost" shape="circle" icon="delete" />
-        <Button type="ghost" shape="circle" icon="edit" />
-      </div>
-    );
-
     const unknownUser = {
       id: -1,
       name: 'Unknown'
     };
 
-    const {user: AppUser} = this.props;
-
     let {id, message, time, user = unknownUser, like = 0, dislike = 0} = this.props.fortune;
+    const {user: AppUser} = this.props;
+    const size = 'default';
+
+    const extra = (
+      <div className="extra">
+        <Button type="ghost" shape="circle" icon="delete" onClick={() => this.props.delete(id)}/>
+        <Button type="ghost" shape="circle" icon="edit" onClick={() => this.props.modify(id)}/>
+      </div>
+    );
+
+
+
 
     return (
       <div className="card">
-        <Card extra={this.state.hover && AppUser.authenticated && user.id === AppUser.data.id ? extra : null}
+        {/*<Card extra={this.state.hover && AppUser.authenticated && user.id === AppUser.data.id ? extra : null}*/}
+        <Card extra={this.state.hover ? extra : null}
               onMouseEnter={this.onMouseEnter}
               onMouseLeave={this.onMouseLeave}>
           <div className="message">
