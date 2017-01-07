@@ -150,6 +150,12 @@ class AppState {
         };
         // handle fortune current page
         this.success.signOut = true;
+        if (this.radios.current > RADIOS.two) {
+          this.radios.current = RADIOS.one;
+          this.pagination = defaultPagination;
+          this.fortunesCount();
+          this.getFortunes();
+        }
       }))
       .catch (action("signOut-error", (e) => {
         this.errors.signOut = true;
