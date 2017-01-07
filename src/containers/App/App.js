@@ -88,9 +88,13 @@ class App extends Component {
     if (this.props.AppState.requests.isPostingFortune) {
       return;
     }
-    this.props.AppState.postFortune({
+    let data = {
       message: this.state.fortune
-    });
+    };
+    if (this.props.AppState.user.authenticated) {
+      data.ownerId = this.props.AppState.user.data.id
+    }
+    this.props.AppState.postFortune(data);
     this.setState({fortune: ""});
   };
 

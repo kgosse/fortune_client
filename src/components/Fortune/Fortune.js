@@ -25,10 +25,10 @@ class Fortune extends Component {
   render() {
     const unknownUser = {
       id: -1,
-      name: 'Unknown'
+      username: 'Unknown'
     };
 
-    let {id, message, time, user = unknownUser, like = 0, dislike = 0} = this.props.fortune;
+    let {id, message, time, owner = unknownUser, like = 0, dislike = 0} = this.props.fortune;
     const {user: AppUser} = this.props;
     const size = 'default';
 
@@ -39,13 +39,9 @@ class Fortune extends Component {
       </div>
     );
 
-
-
-
     return (
       <div className="card">
-        {/*<Card extra={this.state.hover && AppUser.authenticated && user.id === AppUser.data.id ? extra : null}*/}
-        <Card extra={this.state.hover ? extra : null}
+        <Card extra={this.state.hover && AppUser.authenticated && owner.id === AppUser.data.id ? extra : null}
               onMouseEnter={this.onMouseEnter}
               onMouseLeave={this.onMouseLeave}>
           <div className="message">
@@ -73,7 +69,7 @@ class Fortune extends Component {
                    overflowCount={1000} style={{ backgroundColor: (like - dislike) >= 0 ? 'green': 'red' }} />
           </div>
           <div className="author">
-            <span>{`${user.name} ${getFormattedDate(time)}`}</span>
+            <span>{`${owner.username} ${getFormattedDate(time)}`}</span>
           </div>
         </Card>
       </div>

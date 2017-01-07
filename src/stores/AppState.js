@@ -96,6 +96,12 @@ class AppState {
         };
         this.getThirty();
         break;
+      case RADIOS.three:
+        this.getUserFortunes();
+        break;
+      case RADIOS.four:
+        this.getUserTopThirty();
+        break;
     }
   }
 
@@ -306,6 +312,7 @@ class AppState {
         this.requests.isPostingFortune = false;
         this.setSuccess({postFortune: true});
         this.fortunesCount();
+        this.radios.current = RADIOS.one;
         this.getFortunes();
         this.pagination.current = 1;
       }))
@@ -342,13 +349,14 @@ class AppState {
     this.requests.isGettingFortunes = true;
     this.errors.getFortunes = false;
 
-    const pagination = {
+    const filter = {
       limit: this.pagination.pageSize,
       offset: page - 1,
-      order: order || 'time DESC'
+      order: order || 'time DESC',
+      include: "owner"
     };
 
-    fetch(`${AppState.API}/api/Fortunes?filter=${encodeURIComponent(JSON.stringify(pagination))}`, {
+    fetch(`${AppState.API}/api/Fortunes?filter=${encodeURIComponent(JSON.stringify(filter))}`, {
       method: 'GET',
       headers: new Headers({
         'Accept': 'application/json'
@@ -361,6 +369,66 @@ class AppState {
         this.pagination.current = page;
       }))
       .catch (action('getFortunes-error', (e) => {
+        this.requests.isGettingFortunes = false;
+        this.errors.getFortunes = e;
+      }));
+  }
+
+  @action getUserFortunes(page = 1, id) {
+    if (!this.user.authenticated) return;
+
+    this.requests.isGettingFortunes = true;
+    this.errors.getFortunes = false;
+
+    const filter = {
+      limit: this.pagination.pageSize,
+      offset: page - 1,
+      include: "owner",
+      order: "time DESC"
+    };
+
+    fetch(this.injectToken(`${AppState.API}/api/Owners/${this.user.data.id}/Fortunes`)
+      + `&filter=${encodeURIComponent(JSON.stringify(filter))}`, {
+      method: 'GET',
+      headers: new Headers({
+        'Accept': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action('getUserFortunes-success', (response) => {
+        this.requests.isGettingFortunes = false;
+        this.fortunes = response;
+        this.pagination = {
+          ...this.pagination,
+          count: response.length,
+          pageSize: 5,
+          current: 1
+        };
+      }))
+      .catch (action('getUserFortunes-error', (e) => {
+        this.requests.isGettingFortunes = false;
+        this.errors.getFortunes = e;
+      }));
+  }
+
+  @action getUserTopThirty() {
+    this.requests.isGettingFortunes = true;
+    this.errors.getFortunes = false;
+
+    fetch(this.injectToken(`${AppState.API}/api/Owners/getthirty`)
+      + `&id=${this.user.data.id}`, {
+      method: 'GET',
+      headers: new Headers({
+        'Accept': 'application/json'
+      })
+    })
+      .then(e => e.json())
+      .then(action('getUserTopThirty-success', (response) => {
+        this.requests.isGettingFortunes = false;
+        this.fortunes = response.fortunes;
+        this.pagination.current = 1;
+      }))
+      .catch (action('getUserTopThirty-error', (e) => {
         this.requests.isGettingFortunes = false;
         this.errors.getFortunes = e;
       }));

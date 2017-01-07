@@ -20,12 +20,15 @@ class OptionsNav extends Component {
     const total = this.props.radios.current != RADIOS.one ?
       null : `(${this.props.pagination.count})`;
 
+    const userFortunesTotal = this.props.radios.current === RADIOS.three ?
+      `(${this.props.pagination.count})` : null;
+
     if (user.authenticated) {
       options = (
         <RadioGroup onChange={this.onChange} value={this.props.radios.current}>
           <Radio value={RADIOS.one}>Toutes {total}</Radio>
           <Radio value={RADIOS.two}>Top 30</Radio>
-          <Radio value={RADIOS.three}>Mes fortunes</Radio>
+          <Radio value={RADIOS.three}>Mes fortunes {userFortunesTotal}</Radio>
           <Radio value={RADIOS.four}>Mon top 30</Radio>
         </RadioGroup>
       );
