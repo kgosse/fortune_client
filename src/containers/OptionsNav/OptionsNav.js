@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Radio, Button} from 'antd';
 import { observer } from 'mobx-react';
+import {RADIOS} from '../../resources/const';
 import './OptionsNav.css';
 
 const RadioGroup = Radio.Group;
@@ -25,12 +26,30 @@ class OptionsNav extends Component {
   };
 
   render() {
+    const {user} = this.props;
+    let options = null;
+
+    if (user.authenticated) {
+      options = (
+        <RadioGroup onChange={this.onChange} value={this.state.value}>
+          <Radio value={RADIOS.one}>Toutes ({this.props.pagination.count})</Radio>
+          <Radio value={RADIOS.two}>Top 30</Radio>
+          <Radio value={RADIOS.three}>Mes fortunes</Radio>
+          <Radio value={RADIOS.four}>Mon top 30</Radio>
+        </RadioGroup>
+      );
+    } else {
+      options = (
+        <RadioGroup onChange={this.onChange} value={this.state.value}>
+          <Radio value={RADIOS.one}>Toutes ({this.props.pagination.count})</Radio>
+          <Radio value={RADIOS.two}>Top 30</Radio>
+        </RadioGroup>
+      );
+    }
+
     return (
       <div className="optionsnav">
-        <RadioGroup onChange={this.onChange} value={this.state.value}>
-          <Radio value={1}>Toutes ({this.props.pagination.count})</Radio>
-          <Radio value={2}>Top 30</Radio>
-        </RadioGroup>
+        {options}
         <Button type="primary" onClick={this.props.addFortune}>Ajouter Fortune</Button>
       </div>
     );

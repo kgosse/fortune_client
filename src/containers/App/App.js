@@ -122,6 +122,10 @@ class App extends Component {
     }
   };
 
+  handleLogout = () => {
+
+  };
+
   componentWillReact() {
 
     if (this.state.isPostingFortune && !this.props.AppState.requests.isPostingFortune) {
@@ -242,12 +246,17 @@ class App extends Component {
     return (
       <div className="app">
         <NavBar showConnect={() => this.toggleConnection(true)}
-                showSubscription={() => this.toggleSubscription(true)}/>
+                showSubscription={() => this.toggleSubscription(true)}
+                logout={this.handleLogout}
+                user={this.props.AppState.user}
+        />
 
         <div className="content">
           <OptionsNav
             addFortune={() => this.toggleFortune(true)}
             pagination={this.props.AppState.pagination}
+            radios={this.props.AppState.radios}
+            user={this.props.AppState.user}
           />
           <Fortunes fortunes={this.props.AppState.fortunes}
                     likes={this.props.AppState.likes}

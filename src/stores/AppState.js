@@ -1,10 +1,19 @@
 import { observable, action, map} from 'mobx';
+import {RADIOS} from '../resources/const';
 import axios from 'axios';
+
+const defaultPagination = {
+  count: 0,
+  pageSize: 5,
+  current: 1
+};
 
 class AppState {
   @observable requests;
   @observable errors;
   @observable success;
+
+  @observable radios;
 
   @observable likes;
   @observable dislikes;
@@ -18,15 +27,21 @@ class AppState {
   static API = 'http://localhost:3001';
 
   constructor() {
-    this.authenticated = false;
 
     this.fortunes = [];
     this.likes = map();
     this.dislikes = map();
 
+    this.radios = {
+      current: RADIOS.one
+    };
+
     this.user = {
-      authenticated: false,
-      data: null
+      authenticated: true,
+      data: {
+        username: "kgosse",
+        id: 1
+      }
     };
 
     this.pagination = {
@@ -57,6 +72,25 @@ class AppState {
 
     this.fortunesCount();
     this.getFortunes();
+  }
+
+  @action changeRadio(v = RADIOS.one) {
+    this.radios.current = v;
+    switch (v) {
+      case RADIOS.one:
+        this.pagination = defaultPagination;
+        this.fortunesCount();
+        this.getFortunes();
+        break;
+      case RADIOS.two:
+        this.pagination = {
+          count: 30,
+          pageSize: 30,
+          current: 1
+        };
+        this.getFortunes(undefined,["total DESC", "like DESC", "time DESC"]);
+        break;
+    }
   }
 
   @action signUp(data) {
@@ -199,14 +233,14 @@ class AppState {
       }));
   }
 
-  @action getFortunes(page = 1) {
+  @action getFortunes(page = 1, order) {
     this.requests.isGettingFortunes = true;
     this.errors.getFortunes = false;
 
     const pagination = {
       limit: this.pagination.pageSize,
       offset: page - 1,
-      order: 'time DESC'
+      order: order || 'time DESC'
     };
 
     fetch(`${AppState.API}/api/Fortunes?filter=${encodeURIComponent(JSON.stringify(pagination))}`, {
