@@ -34,8 +34,10 @@ class Fortune extends Component {
 
     const extra = (
       <div className="extra">
-        <Button type="ghost" shape="circle" icon="delete" onClick={() => this.props.delete(id)}/>
-        <Button type="ghost" shape="circle" icon="edit" onClick={() => this.props.modify(id)}/>
+        <Button type="ghost" shape="circle" icon="delete"
+                onClick={() => this.props.delete(id)}/>
+        <Button type="ghost" shape="circle" icon="edit"
+                onClick={() => this.props.modify(this.props.fortune)}/>
       </div>
     );
 

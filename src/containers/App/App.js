@@ -38,7 +38,8 @@ class App extends Component {
       fortune: "",
       isPostingFortune: false,
       isRegistering: false,
-      isAuthenticating: false
+      isAuthenticating: false,
+      fortuneId: null
     };
   }
 
@@ -150,8 +151,18 @@ class App extends Component {
     this.props.AppState.deleteFortune(id);
   };
 
-  handleModify = (id) => {
+  handleModify = (f) => {
+    this.setState({fortuneId: f.id, visibleFortune: true});
+    this.fortuneTextarea.refs.input.value = f.message;
+  };
 
+  onModify = () => {
+    if (this.props.AppState.requests.isModifyingFortune) return;
+
+    this.props.AppState.modifyFortune({
+      id: this.state.fortuneId,
+      message: this.fortuneTextarea.refs.input.value.trim()
+    });
   };
 
   componentWillReact() {
@@ -211,6 +222,16 @@ class App extends Component {
       this.props.AppState.setErrors({deleteFortune: null});
     }
 
+    if (this.props.AppState.success.modifyFortune) {
+      this.setState({visibleFortune: false, fortuneId: null});
+      success("La fortune a été modifiée avec succès.");
+      this.props.AppState.setSuccess({modifyFortune: null});
+      this.fortuneTextarea.refs.input.value = "";
+    } else if (this.props.AppState.errors.modifyFortune) {
+      error("Erreur lors de la modification de la fortune");
+      this.props.AppState.setErrors({modifyFortune: null});
+    }
+
     this.setState({
       isPostingFortune: this.props.AppState.requests.isPostingFortune,
       isRegistering: this.props.AppState.requests.isRegistering,
@@ -220,17 +241,28 @@ class App extends Component {
   }
 
   fortuneModal = () => {
+    const button = this.state.fortuneId != null ?
+      (
+        <Button key="submit" type="primary" size="large"
+                loading={this.props.AppState.requests.isModifyingFortune}
+                onClick={this.onModify}>
+          Modifier
+        </Button>
+      ) :
+      (
+        <Button key="submit" type="primary" size="large"
+                loading={this.props.AppState.requests.isPostingFortune}
+                onClick={this.addFortune}>
+          Ajouter
+        </Button>
+      );
+
     return (
       <Modal title="Ajouter Fortune" visible={this.state.visibleFortune}
-             onOk={this.addFortune} onCancel={this.toggleFortune.bind(this,false)}
-             okText="Ajouter" cancelText="Annuler"
              footer={[
-               <Button key="back" type="ghost" size="large" onClick={this.toggleFortune.bind(this, false)}>Annuler</Button>,
-               <Button key="submit" type="primary" size="large"
-                       loading={this.props.AppState.requests.isPostingFortune}
-                       onClick={this.addFortune}>
-                 Ajouter
-               </Button>,
+               <Button key="back" type="ghost" size="large"
+                       onClick={() => this.toggleFortune(false)}>Annuler</Button>,
+               button
              ]}
       >
         <Input type="textarea" rows={4}

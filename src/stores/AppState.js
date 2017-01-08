@@ -62,7 +62,8 @@ class AppState {
       register: null,
       authentication: null,
       signOut: null,
-      deleteFortune: null
+      deleteFortune: null,
+      modifyFortune: null
     };
 
     this.success = {
@@ -70,7 +71,8 @@ class AppState {
       register: null,
       authentication: null,
       signOut: null,
-      deleteFortune: null
+      deleteFortune: null,
+      modifyFortune: null
     };
 
     this.fortunesCount();
@@ -217,7 +219,6 @@ class AppState {
       .then(action("deleteFortune-success", (v) => {
         this.requests.isDeletingFortune = false;
         this.success.deleteFortune = true;
-        // this.dislikes.delete(id.toString());
         this.refreshFortunes();
       }))
       .catch (action("deleteFortune-error", (e) => {
@@ -327,14 +328,32 @@ class AppState {
         this.requests.isPostingFortune = false;
         this.setSuccess({postFortune: true});
         this.refreshFortunes();
-/*        this.fortunesCount();
-        this.radios.current = RADIOS.one;
-        this.getFortunes();
-        this.pagination.current = 1;*/
       }))
       .catch (action("postFortune-error", (e) => {
         this.requests.isPostingFortune = false;
         this.errors.postFortune = e;
+      }));
+  }
+
+  @action modifyFortune(data) {
+    this.requests.isModifyingFortune = true;
+    this.errors.postFortune = null;
+
+    fetch(this.injectToken(`${AppState.API}/api/Fortunes/${data.id}`), {
+      method: 'PATCH',
+      body: JSON.stringify({message: data.message}),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(action("modifyFortune-success", () => {
+        this.requests.isModifyingFortune = false;
+        this.setSuccess({modifyFortune: true});
+        this.refreshFortunes();
+      }))
+      .catch (action("modifyFortune-error", (e) => {
+        this.requests.isModifyingFortune = false;
+        this.errors.modifyFortune = e;
       }));
   }
 
