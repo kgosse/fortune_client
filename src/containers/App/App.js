@@ -147,7 +147,7 @@ class App extends Component {
   };
 
   handleDelete = (id) => {
-
+    this.props.AppState.deleteFortune(id);
   };
 
   handleModify = (id) => {
@@ -201,6 +201,14 @@ class App extends Component {
     } else if (this.props.AppState.errors.signOut) {
       error("Erreur déconnexion.");
       this.props.AppState.setErrors({signOut: null});
+    }
+
+    if (this.props.AppState.success.deleteFortune) {
+      success("Fortune supprimée avec succès.");
+      this.props.AppState.setSuccess({deleteFortune: null});
+    } else if (this.props.AppState.errors.deleteFortune) {
+      error("Erreur suppression fortune.");
+      this.props.AppState.setErrors({deleteFortune: null});
     }
 
     this.setState({

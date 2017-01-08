@@ -50,7 +50,8 @@ class AppState {
       isPostingFortune: false,
       isGettingFortunes: false,
       isAuthenticating: false,
-      isRegistering: false
+      isRegistering: false,
+      isDeletingFortune: false
     };
 
     this.errors = {
@@ -60,14 +61,16 @@ class AppState {
       dislike: null,
       register: null,
       authentication: null,
-      signOut: null
+      signOut: null,
+      deleteFortune: null
     };
 
     this.success = {
       postFortune: null,
       register: null,
       authentication: null,
-      signOut: null
+      signOut: null,
+      deleteFortune: null
     };
 
     this.fortunesCount();
@@ -202,17 +205,24 @@ class AppState {
   }
 
   @action deleteFortune(id) {
+    this.requests.isDeletingFortune = true;
+
     fetch(this.injectToken(`${AppState.API}/api/Fortunes/${id}`), {
       method: 'DELETE',
       headers: new Headers({
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       })
     })
       .then(e => e.json())
       .then(action("deleteFortune-success", (v) => {
-        this.dislikes.delete(id.toString());
+        this.requests.isDeletingFortune = false;
+        this.success.deleteFortune = true;
+        // this.dislikes.delete(id.toString());
+        this.refreshFortunes();
       }))
       .catch (action("deleteFortune-error", (e) => {
+        this.requests.isDeletingFortune = false;
+        this.errors.deleteFortune = e;
         console.log(e);
       }));
   }
@@ -316,10 +326,11 @@ class AppState {
       .then(action("postFortune-success", () => {
         this.requests.isPostingFortune = false;
         this.setSuccess({postFortune: true});
-        this.fortunesCount();
+        this.refreshFortunes();
+/*        this.fortunesCount();
         this.radios.current = RADIOS.one;
         this.getFortunes();
-        this.pagination.current = 1;
+        this.pagination.current = 1;*/
       }))
       .catch (action("postFortune-error", (e) => {
         this.requests.isPostingFortune = false;
@@ -327,7 +338,7 @@ class AppState {
       }));
   }
 
-  @action getThirty(userId) {
+  @action getThirty() {
     this.requests.isGettingFortunes = true;
     this.errors.getFortunes = false;
 
@@ -451,6 +462,24 @@ class AppState {
       ...this.errors,
       ...val
     };
+  }
+
+  @action refreshFortunes() {
+    switch (this.radios.current) {
+      case RADIOS.one:
+        this.fortunesCount();
+        this.getFortunes();
+        break;
+      case RADIOS.two:
+        this.getThirty();
+        break;
+      case RADIOS.three:
+        this.getUserFortunes();
+        break;
+      case RADIOS.four:
+        this.getUserTopThirty();
+        break;
+    }
   }
 }
 

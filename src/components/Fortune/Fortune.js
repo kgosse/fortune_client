@@ -25,7 +25,7 @@ class Fortune extends Component {
   render() {
     const unknownUser = {
       id: -1,
-      username: 'Unknown'
+      username: 'Inconnu'
     };
 
     let {id, message, time, owner = unknownUser, like = 0, dislike = 0} = this.props.fortune;
