@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import {Provider} from 'mobx-react';
 import {Router, hashHistory} from 'react-router';
 import {RouterStore, syncHistoryWithStore} from 'mobx-react-router';
